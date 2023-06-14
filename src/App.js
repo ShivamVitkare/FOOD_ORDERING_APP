@@ -1,24 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import Navbar from "./Navbar";
+import Meals from "./Meals";
+import './App.css'
+// import Counter from "./Counter";
 
 function App() {
+  const [cartItems, setCartItems] = useState([])
+
+  function addToCart(item){
+    const temp = [...cartItems];
+
+    const presentItem = temp.find(i => (i.id === item.id))
+    if(presentItem){
+      presentItem.quantity++;
+      presentItem.totalPrice = presentItem.quantity * presentItem.price;
+    }else{
+      temp.push(item)
+    }
+    setCartItems(temp);
+  }
+
+  function removeFromCart(item){
+    const temp = [...cartItems];
+
+    const remainingItems = []
+
+    if(item.quantity > 1){
+      const presentItem = temp.find(i => (i.id === item.id))
+      presentItem.quantity--;
+      presentItem.totalPrice = presentItem.quantity * presentItem.price;
+      setCartItems(temp)
+    }else{
+      temp.map(i => {
+        if(item.id !== i.id){
+          remainingItems.push(i)
+        }
+      })
+      setCartItems(remainingItems)
+    }
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+      <Navbar cartItems = {cartItems} removeFromCart = {removeFromCart} />
+      <Meals addToCart = {addToCart} />
+      {/* <Counter /> */}
+    </React.Fragment>
   );
 }
 
